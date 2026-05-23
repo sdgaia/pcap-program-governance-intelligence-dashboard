@@ -11,8 +11,10 @@ const pct = v => `${Math.round(v)}%`;
 
 function getRecordId(req) {
   const rawQuery = req.originalUrl.split('?')[1] || '';
-  const inferredRecordId = rawQuery.startsWith('rec') ? rawQuery.split('&')[0] : '';
-  return req.query.recordId || req.params.recordId || inferredRecordId || '';
+  const firstQueryToken = rawQuery.split('&')[0] || '';
+  const inferredFromBareQuery = firstQueryToken.startsWith('rec') ? firstQueryToken : '';
+  const inferredFromPath = (req.path || '').split('/').find(part => part.startsWith('rec')) || '';
+  return req.query.recordId || req.params.recordId || inferredFromBareQuery || inferredFromPath || '';
 }
 
 function gauge(title, value, invert = false) {
@@ -57,15 +59,7 @@ function renderDashboard(req, res) {
 </head>
 <body>
 <div class="page">
-  <div class="card header mb">
-    <div>
-      <div class="eyebrow">🧩 Programme Governance Intelligence Dashboard</div>
-      <div class="title">National Agroecology Programme</div>
-      <div class="sub">Programme Intelligence • Execution Propagation • Recursive Operational Intelligence</div>
-      <div class="meta"><span>🏷️ Agroecology Programme</span><span>🇬🇭 Ghana</span><span>🏛️ MoFA</span><span>📄 PRG-1</span>${recordId ? `<span>🔗 ${recordId}</span>` : ''}</div>
-    </div>
-    <div class="meta"><span>📅 Updated: 5/23/2026</span><span>⬇ Export</span></div>
-  </div>
+  <div class="card header mb"><div><div class="eyebrow">🧩 Programme Governance Intelligence Dashboard</div><div class="title">National Agroecology Programme</div><div class="sub">Programme Intelligence • Execution Propagation • Recursive Operational Intelligence</div><div class="meta"><span>🏷️ Agroecology Programme</span><span>🇬🇭 Ghana</span><span>🏛️ MoFA</span><span>📄 PRG-1</span>${recordId ? `<span>🔗 ${recordId}</span>` : ''}</div></div><div class="meta"><span>📅 Updated: 5/23/2026</span><span>⬇ Export</span></div></div>
   <div class="grid g5 mb">${gauge('Programme Governance Intelligence Score',79)}${gauge('Operational Aggregation Intelligence',74)}${gauge('Intrinsic OCI-D',82)}${gauge('Intrinsic OCI-O',69)}${gauge('Fragmentation Exposure Index',31,true)}</div>
   <div class="card assessment mb"><h2>🧠 Overall Programme-Level Governance Assessment</h2><div class="grid g3"><div class="mini"><span>⚙️ PrOG — Programme Operational Governance</span><div class="metric" style="color:#2563eb">66%</div>Moderate</div><div class="mini"><span>🧠 PrIG — Programme Governance Intelligence</span><div class="metric" style="color:#16a34a">79%</div>Moderate/Strong</div><div class="mini"><span>⚖️ Intelligence–Execution Differential</span><div class="metric">13%</div>🟠 Execution Lag</div></div><div class="interpret"><b>🧩 Execution Propagation With Intelligence Lead</b><p>Programme intelligence is structurally stronger than execution continuity. Monitoring recursion and escalation inheritance should be reinforced before scaling action-level implementation.</p><span class="tag">🔵 Execution continuity</span><span class="tag">🟢 Monitoring recursion</span><span class="tag">🟠 Escalation inheritance</span><span class="tag">📄 Operational traceability</span></div></div>
   <div class="grid g2 mb"><div class="card"><div class="section-title">Recursive Governance Intelligence Components (C1–C6)</div>${bar('C1 Strategic Alignment','Programme-to-policy alignment',88)}${bar('C2 Instrument Translation','Policy instruments translated into action logic',84)}${bar('C3 Operational Architecture','Action architecture and delivery logic',76)}${bar('C4 Monitoring Intelligence','Recursive monitoring and signal quality',71)}${bar('C5 Escalation Intelligence','Escalation inheritance and closure logic',63)}${bar('C6 Recursive Auditability','Traceability across action chains',81)}<div class="weak"><span>Weakest Recursive Layer<br>C5 Escalation Intelligence</span><span>63%</span></div></div><div class="card"><div class="section-title">Governance Intelligence Stability Layer</div><div class="box"><h4>Execution Continuity</h4><p>Action propagation remains stable across operational clusters, but closure discipline varies between actions.</p></div><div class="box"><h4>Monitoring Integrity</h4><p>Recursive monitoring logic remains partially dependent on reporting quality and action-level data cadence.</p></div><div class="box"><h4>Escalation Continuity</h4><p>Escalation inheritance remains uneven across action chains and requires stronger trigger ownership.</p></div><div class="box"><h4>Recursive Auditability</h4><p>Programme evidence architecture remains structurally coherent and broadly traceable.</p></div></div></div>
@@ -83,5 +77,6 @@ app.get('/api', renderDashboard);
 app.get('/api/:recordId', renderDashboard);
 app.get('/dashboard', renderDashboard);
 app.get('/dashboard/:recordId', renderDashboard);
+app.get('*', renderDashboard);
 
 app.listen(port, () => console.log(`Programme Governance Intelligence Dashboard running on ${port}`));
