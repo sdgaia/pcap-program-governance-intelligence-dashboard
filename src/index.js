@@ -9,6 +9,12 @@ const exposureColor = v => v <= 20 ? '#16a34a' : v <= 40 ? '#2563eb' : v <= 60 ?
 const exposureLabel = v => v <= 20 ? 'Low Exposure' : v <= 40 ? 'Moderate Exposure' : v <= 60 ? 'High Exposure' : 'Severe Exposure';
 const pct = v => `${Math.round(v)}%`;
 
+function getRecordId(req) {
+  const rawQuery = req.originalUrl.split('?')[1] || '';
+  const inferredRecordId = rawQuery.startsWith('rec') ? rawQuery.split('&')[0] : '';
+  return req.query.recordId || req.params.recordId || inferredRecordId || '';
+}
+
 function gauge(title, value, invert = false) {
   const c = invert ? exposureColor(value) : scoreColor(value);
   const l = invert ? exposureLabel(value) : scoreLabel(value);
@@ -39,7 +45,7 @@ function bar(title, sub, value) {
 }
 
 function renderDashboard(req, res) {
-  const recordId = req.query.recordId || req.params.recordId || '';
+  const recordId = getRecordId(req);
   const html = `<!doctype html>
 <html>
 <head>
@@ -60,42 +66,12 @@ function renderDashboard(req, res) {
     </div>
     <div class="meta"><span>📅 Updated: 5/23/2026</span><span>⬇ Export</span></div>
   </div>
-
-  <div class="grid g5 mb">
-    ${gauge('Programme Governance Intelligence Score',79)}
-    ${gauge('Operational Aggregation Intelligence',74)}
-    ${gauge('Intrinsic OCI-D',82)}
-    ${gauge('Intrinsic OCI-O',69)}
-    ${gauge('Fragmentation Exposure Index',31,true)}
-  </div>
-
-  <div class="card assessment mb">
-    <h2>🧠 Overall Programme-Level Governance Assessment</h2>
-    <div class="grid g3">
-      <div class="mini"><span>⚙️ PrOG — Programme Operational Governance</span><div class="metric" style="color:#2563eb">66%</div>Moderate</div>
-      <div class="mini"><span>🧠 PrIG — Programme Governance Intelligence</span><div class="metric" style="color:#16a34a">79%</div>Moderate/Strong</div>
-      <div class="mini"><span>⚖️ Intelligence–Execution Differential</span><div class="metric">13%</div>🟠 Execution Lag</div>
-    </div>
-    <div class="interpret"><b>🧩 Execution Propagation With Intelligence Lead</b><p>Programme intelligence is structurally stronger than execution continuity. Monitoring recursion and escalation inheritance should be reinforced before scaling action-level implementation.</p><span class="tag">🔵 Execution continuity</span><span class="tag">🟢 Monitoring recursion</span><span class="tag">🟠 Escalation inheritance</span><span class="tag">📄 Operational traceability</span></div>
-  </div>
-
-  <div class="grid g2 mb">
-    <div class="card"><div class="section-title">Recursive Governance Intelligence Components (C1–C6)</div>${bar('C1 Strategic Alignment','Programme-to-policy alignment',88)}${bar('C2 Instrument Translation','Policy instruments translated into action logic',84)}${bar('C3 Operational Architecture','Action architecture and delivery logic',76)}${bar('C4 Monitoring Intelligence','Recursive monitoring and signal quality',71)}${bar('C5 Escalation Intelligence','Escalation inheritance and closure logic',63)}${bar('C6 Recursive Auditability','Traceability across action chains',81)}<div class="weak"><span>Weakest Recursive Layer<br>C5 Escalation Intelligence</span><span>63%</span></div></div>
-    <div class="card"><div class="section-title">Governance Intelligence Stability Layer</div><div class="box"><h4>Execution Continuity</h4><p>Action propagation remains stable across operational clusters, but closure discipline varies between actions.</p></div><div class="box"><h4>Monitoring Integrity</h4><p>Recursive monitoring logic remains partially dependent on reporting quality and action-level data cadence.</p></div><div class="box"><h4>Escalation Continuity</h4><p>Escalation inheritance remains uneven across action chains and requires stronger trigger ownership.</p></div><div class="box"><h4>Recursive Auditability</h4><p>Programme evidence architecture remains structurally coherent and broadly traceable.</p></div></div>
-  </div>
-
-  <div class="grid g3 mb">
-    <div class="card"><div class="section-title">Programme Propagation Architecture</div><div class="chain"><div class="node"><b>🏛️ National Strategy</b><span>NS-1</span></div><div class="arrow">➜</div><div class="node"><b>📄 Policy Layer</b><span>POL-1</span></div><div class="arrow">➜</div><div class="node active"><b>📦 Programme Layer</b><span>PRG-1 active layer</span></div><div class="arrow">➜</div><div class="node"><b>⚙️ Action Layer</b><span>3 linked actions</span></div></div></div>
-    <div class="card">${gauge('Governance Certification Readiness',76)}</div>
-    <div class="card"><div class="section-title">Propagation Intelligence</div><div class="box"><h4>Strongest Action Propagation</h4><p>ACT-2 Circular Food System — 84%</p></div><div class="box"><h4>Weakest Action Propagation</h4><p>ACT-5 Nutrition Outreach — 53%</p></div><span class="tag">🟠 Escalation propagation risk</span><span class="tag">🔵 Monitoring dependency</span></div>
-  </div>
-
+  <div class="grid g5 mb">${gauge('Programme Governance Intelligence Score',79)}${gauge('Operational Aggregation Intelligence',74)}${gauge('Intrinsic OCI-D',82)}${gauge('Intrinsic OCI-O',69)}${gauge('Fragmentation Exposure Index',31,true)}</div>
+  <div class="card assessment mb"><h2>🧠 Overall Programme-Level Governance Assessment</h2><div class="grid g3"><div class="mini"><span>⚙️ PrOG — Programme Operational Governance</span><div class="metric" style="color:#2563eb">66%</div>Moderate</div><div class="mini"><span>🧠 PrIG — Programme Governance Intelligence</span><div class="metric" style="color:#16a34a">79%</div>Moderate/Strong</div><div class="mini"><span>⚖️ Intelligence–Execution Differential</span><div class="metric">13%</div>🟠 Execution Lag</div></div><div class="interpret"><b>🧩 Execution Propagation With Intelligence Lead</b><p>Programme intelligence is structurally stronger than execution continuity. Monitoring recursion and escalation inheritance should be reinforced before scaling action-level implementation.</p><span class="tag">🔵 Execution continuity</span><span class="tag">🟢 Monitoring recursion</span><span class="tag">🟠 Escalation inheritance</span><span class="tag">📄 Operational traceability</span></div></div>
+  <div class="grid g2 mb"><div class="card"><div class="section-title">Recursive Governance Intelligence Components (C1–C6)</div>${bar('C1 Strategic Alignment','Programme-to-policy alignment',88)}${bar('C2 Instrument Translation','Policy instruments translated into action logic',84)}${bar('C3 Operational Architecture','Action architecture and delivery logic',76)}${bar('C4 Monitoring Intelligence','Recursive monitoring and signal quality',71)}${bar('C5 Escalation Intelligence','Escalation inheritance and closure logic',63)}${bar('C6 Recursive Auditability','Traceability across action chains',81)}<div class="weak"><span>Weakest Recursive Layer<br>C5 Escalation Intelligence</span><span>63%</span></div></div><div class="card"><div class="section-title">Governance Intelligence Stability Layer</div><div class="box"><h4>Execution Continuity</h4><p>Action propagation remains stable across operational clusters, but closure discipline varies between actions.</p></div><div class="box"><h4>Monitoring Integrity</h4><p>Recursive monitoring logic remains partially dependent on reporting quality and action-level data cadence.</p></div><div class="box"><h4>Escalation Continuity</h4><p>Escalation inheritance remains uneven across action chains and requires stronger trigger ownership.</p></div><div class="box"><h4>Recursive Auditability</h4><p>Programme evidence architecture remains structurally coherent and broadly traceable.</p></div></div></div>
+  <div class="grid g3 mb"><div class="card"><div class="section-title">Programme Propagation Architecture</div><div class="chain"><div class="node"><b>🏛️ National Strategy</b><span>NS-1</span></div><div class="arrow">➜</div><div class="node"><b>📄 Policy Layer</b><span>POL-1</span></div><div class="arrow">➜</div><div class="node active"><b>📦 Programme Layer</b><span>PRG-1 active layer</span></div><div class="arrow">➜</div><div class="node"><b>⚙️ Action Layer</b><span>3 linked actions</span></div></div></div><div class="card">${gauge('Governance Certification Readiness',76)}</div><div class="card"><div class="section-title">Propagation Intelligence</div><div class="box"><h4>Strongest Action Propagation</h4><p>ACT-2 Circular Food System — 84%</p></div><div class="box"><h4>Weakest Action Propagation</h4><p>ACT-5 Nutrition Outreach — 53%</p></div><span class="tag">🟠 Escalation propagation risk</span><span class="tag">🔵 Monitoring dependency</span></div></div>
   <div class="card exposure mb"><div class="section-title">⚠️ Programme Intelligence Exposure</div><div class="exposure-grid"><div class="exposure-item"><b>Monitoring Dependency</b><strong class="blue">Moderate</strong></div><div class="exposure-item"><b>Escalation Inheritance</b><strong class="orange">Uneven</strong></div><div class="exposure-item"><b>Action Propagation</b><strong class="green">Stable</strong></div><div class="exposure-item"><b>Closure Traceability</b><strong class="blue">Moderate</strong></div></div><span class="tag">📡 Propagation risk</span><span class="tag">🚨 Escalation bottleneck</span><span class="tag">🧾 Evidence continuity</span></div>
-
-  <div class="grid g2">
-    <div class="card"><div class="section-title">Linked Action Governance Intelligence Benchmarking</div><table class="tbl"><tr><th>#</th><th>Action</th><th>Governance Intelligence</th><th>Status</th></tr><tr><td>1</td><td>ACT-1 Agroecology Pilot</td><td>81%</td><td><span class="status strong">Strong</span></td></tr><tr><td>2</td><td>ACT-2 Circular Food System</td><td>84%</td><td><span class="status strong">Strong</span></td></tr><tr><td>3</td><td>ACT-5 Nutrition Outreach</td><td>53%</td><td><span class="status fragile">Fragile</span></td></tr></table></div>
-    <div class="card"><div class="section-title">Programme Governance Intelligence Synthesis</div><div class="box"><h4>Executive Summary</h4><p>Programme governance intelligence remains operationally coherent with moderate escalation continuity and stable action propagation.</p></div><div class="box"><h4>Reviewer Focus</h4><p>Recursive monitoring sufficiency, escalation inheritance and action-level propagation stability.</p></div><div class="box"><h4>Intelligence Strengths</h4><p>✅ Strong strategic alignment<br>✅ Stable action propagation<br>✅ Robust recursive auditability</p></div><div class="box"><h4>Key Intelligence Gaps</h4><p>⚠️ Escalation inheritance remains partially unstable<br>⚠️ Monitoring recursion depends on action-level reporting discipline</p></div></div>
-  </div>
+  <div class="grid g2"><div class="card"><div class="section-title">Linked Action Governance Intelligence Benchmarking</div><table class="tbl"><tr><th>#</th><th>Action</th><th>Governance Intelligence</th><th>Status</th></tr><tr><td>1</td><td>ACT-1 Agroecology Pilot</td><td>81%</td><td><span class="status strong">Strong</span></td></tr><tr><td>2</td><td>ACT-2 Circular Food System</td><td>84%</td><td><span class="status strong">Strong</span></td></tr><tr><td>3</td><td>ACT-5 Nutrition Outreach</td><td>53%</td><td><span class="status fragile">Fragile</span></td></tr></table></div><div class="card"><div class="section-title">Programme Governance Intelligence Synthesis</div><div class="box"><h4>Executive Summary</h4><p>Programme governance intelligence remains operationally coherent with moderate escalation continuity and stable action propagation.</p></div><div class="box"><h4>Reviewer Focus</h4><p>Recursive monitoring sufficiency, escalation inheritance and action-level propagation stability.</p></div><div class="box"><h4>Intelligence Strengths</h4><p>✅ Strong strategic alignment<br>✅ Stable action propagation<br>✅ Robust recursive auditability</p></div><div class="box"><h4>Key Intelligence Gaps</h4><p>⚠️ Escalation inheritance remains partially unstable<br>⚠️ Monitoring recursion depends on action-level reporting discipline</p></div></div></div>
 </div>
 </body>
 </html>`;
@@ -106,5 +82,6 @@ app.get('/', renderDashboard);
 app.get('/api', renderDashboard);
 app.get('/api/:recordId', renderDashboard);
 app.get('/dashboard', renderDashboard);
+app.get('/dashboard/:recordId', renderDashboard);
 
 app.listen(port, () => console.log(`Programme Governance Intelligence Dashboard running on ${port}`));
